@@ -1,0 +1,35 @@
+---
+- name: copy ca pem
+  become_user: ubuntu
+  copy: src=~/certs/ca/ca.pem dest=/certs/ca.pem mode=0644
+  tags: certs
+
+- name: copy server pem
+  become_user: ubuntu
+  copy: src=~/certs/server/server.pem dest=/certs/server.pem mode=0644
+  tags: certs
+
+- name: copy server key
+  become_user: ubuntu
+  copy: src=~/certs/server/server-key.pem dest=/certs/server-key.pem mode=0600
+  tags: certs
+
+- name: copy client pem
+  become_user: ubuntu
+  copy: src=~/certs/client/client.pem dest=/certs/client.pem mode=0644
+  tags: certs
+
+# for etcd
+- name: copy member pem
+  become_user: ubuntu
+  copy: src=~/certs/{{ ansible_host }}/member.pem dest=/certs/member.pem mode=0644
+  tags: certs
+  ignore_errors: True
+
+# for etcd
+- name: copy member key
+  become_user: ubuntu
+  copy: src=~/certs/{{ ansible_host }}/memeber-key.pem dest=/certs/member-key.pem mode=0600
+  tags: certs
+  ignore_errors: True
+

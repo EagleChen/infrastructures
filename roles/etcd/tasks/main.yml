@@ -1,0 +1,36 @@
+---
+- name: download etcd
+  get_url: url=https://github.com/coreos/etcd/releases/download/{{ etcd_version }}/etcd-{{ etcd_version }}-linux-amd64.tar.gz dest=/tmp/etcd.tgz mode=0664
+  tags: download
+
+- name: install etcd
+  become_user: root
+  shell: cd /tmp && tar xzf etcd.tgz && cp etcd-{{ etcd_version }}-linux-amd64/etcd* /usr/local/bin
+  tags: install
+
+- name: create data dir
+  become_user: root
+  file: dest=/etcd state=directory owner={{ etcd_user }} group={{ etcd_group }}
+  tags: directory
+
+- name: render etcd service script
+  become_user: root
+  template: src=etcd.service.j2 dest=/etc/systemd/system/etcd.service mode=0644
+  tags: render
+  when: not use_tls
+
+- include: ../../common/tasks/certificates.yml
+  when: use_tls
+
+- name: render etcd service script with tls
+  become_user: root
+  template: src=etcd.service.tls.j2 dest=/etc/systemd/system/etcd.service mode=0644
+  tags: render
+  when: use_tls
+
+- name: enable etcd service
+  become_user: root
+  shell: systemctl enable etcd.service
+  tags: service
+  notify:
+    - restart etcd

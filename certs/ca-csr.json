@@ -1,0 +1,14 @@
+{
+    "CN": "private_ca",
+    "key": {
+        "algo": "ecdsa",
+        "size": 256
+    },
+    "names": [
+        {
+            "C": "CN",
+            "L": "SH",
+            "ST": "Shanghai"
+        }
+    ]
+}

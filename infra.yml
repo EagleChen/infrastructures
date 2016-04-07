@@ -1,0 +1,6 @@
+---
+- hosts: etcd_servers
+  user: ubuntu
+  become: true
+  roles:
+    - {role: etcd, use_tls: true, etcd_user: 'ubuntu', etcd_group: 'ubuntu', etcd_version: 'v2.3.1', etcd_token: 'dev-cluster'}

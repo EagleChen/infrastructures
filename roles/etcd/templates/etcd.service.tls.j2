@@ -1,0 +1,29 @@
+[Unit]
+Description=etcd key-value store
+Documentation=https://github.com/coreos/etcd
+
+[Service]
+User={{ etcd_user }}
+Type=notify
+Environment="ETCD_DATA_DIR=/etcd"
+Environment="ETCD_NAME={{ inventory_hostname }}"
+Environment="ETCD_INITIAL_CLUSTER={% set cluster = [] %}{% for host in groups['etcd_servers'] %}{% if cluster.append(host+'=https://'+hostvars[host]['ansible_eth0']['ipv4']['address']+':2380') %}{% endif %}{% endfor %}{{ cluster | join(',') }}"
+Environment="ETCD_INITIAL_CLUSTER_STATE=new"
+Environment="ETCD_INITIAL_ADVERTISE_PEER_URLS=https://{{ ansible_host }}:2380"
+Environment="ETCD_LISTEN_PEER_URLS=https://{{ ansible_host }}:2380"
+Environment="ETCD_LISTEN_CLIENT_URLS=https://{{ ansible_host }}:2379,https://127.0.0.1:2379"
+Environment="ETCD_ADVERTISE_CLIENT_URLS=https://{{ ansible_host }}:2379"
+Environment="ETCD_INITIAL_CLUSTER_TOKEN={{ etcd_token }}"
+Environment="ETCD_CERT_FILE=/certs/server.pem"
+Environment="ETCD_KEY_FILE=/certs/server-key.pem"
+Environment="ETCD_TRUSTED_CA_FILE=/certs/ca.pem"
+Environment="ETCD_CLIENT_CERT_AUTH=true"
+Environment="ETCD_PEER_CLIENT_CERT_AUTH=true"
+Environment="ETCD_PEER_TRUSTED_CA_FILE=/certs/ca.pem"
+ExecStart=/usr/local/bin/etcd
+Restart=always
+RestartSec=10s
+LimitNOFILE=40000
+
+[Install]
+WantedBy=multi-user.target
