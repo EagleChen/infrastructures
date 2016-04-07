@@ -1,4 +1,4 @@
 ---
 - name: restart etcd
-  sudo: yes
+  become_user: root
   service: name=etcd state=restarted
