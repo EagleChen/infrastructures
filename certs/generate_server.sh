@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # you should put all your servers here
-# empty string means any server
 export SERVER_ADDR=""
 
 mkdir -p ~/certs
