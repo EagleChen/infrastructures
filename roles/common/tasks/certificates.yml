@@ -22,6 +22,11 @@
   copy: src=~/certs/client/client.pem dest=/certs/client.pem mode=0644
   tags: certs
 
+- name: copy client key
+  become_user: "{{ cert_user }}"
+  copy: src=~/certs/client/client-key.pem dest=/certs/client-key.pem mode=0600
+  tags: certs
+
 # for etcd
 - name: copy member pem
   become_user: "{{ cert_user }}"
