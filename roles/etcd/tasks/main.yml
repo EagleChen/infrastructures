@@ -1,12 +1,17 @@
 ---
+- stat: /usr/local/bin/etcd
+  register: etcdbin
+
 - name: download etcd
   get_url: url=https://github.com/coreos/etcd/releases/download/{{ etcd_version }}/etcd-{{ etcd_version }}-linux-amd64.tar.gz dest=/tmp/etcd.tgz mode=0664
   tags: download
+  when: not etcdbin.stat.exists
 
 - name: install etcd
   become_user: root
   shell: cd /tmp && tar xzf etcd.tgz && cp etcd-{{ etcd_version }}-linux-amd64/etcd* /usr/local/bin
   tags: install
+  when: not etcdbin.stat.exists
 
 - name: create data dir
   become_user: root

@@ -1,8 +1,12 @@
 ---
+- stat: /usr/bin/docker
+  register: dockerbin
+
 - name: install docker
   become_user: root
   shell: curl -fsSL https://test.docker.com/ | sed 's|url="https://test|url="https://get|' | sh
   tags: install
+  when: not dockerbin.stat.exists
 
 - name: render docker opts
   become_user: root

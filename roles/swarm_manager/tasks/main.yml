@@ -2,6 +2,14 @@
 - include: ../../common/tasks/certificates.yml
   when: use_tls
 
+- name: stop previous swarm manager
+  shell: docker rm -f swarm-manager
+  tags:
+	- swarm
+	- manager
+  register: stop_result
+  failed_when: "stop_result.rc != 0 && stop_result.rc != 1"
+
 - name: start swarm manager
   shell: docker run -d --name swarm-manager --restart=always -p 8375:2375 swarm manage etcd://{{ etcd_hosts }}/swarm
   tags:

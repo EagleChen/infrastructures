@@ -18,7 +18,7 @@
     - {role: docker, use_tls: true, cert_user: 'ubuntu', docker_user: 'ubuntu'}
     - {role: swarm, use_tls: true}
 
-- host: swarm_manager
+- hosts: swarm_managers
   user: ubuntu
   vars:
     etcd_hosts: "{% set cluster = [] %}{% for host in groups['etcd_servers'] %}{% if cluster.append(hostvars[host]['ansible_eth0']['ipv4']['address']+':2379') %}{% endif %}{% endfor %}{{ cluster | join(',') }}"
