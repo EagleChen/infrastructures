@@ -1,5 +1,5 @@
 ---
-- stat: /usr/bin/docker
+- stat: path=/usr/bin/docker
   register: dockerbin
 
 - name: install docker
@@ -12,10 +12,7 @@
   become_user: root
   template: src=docker.service.j2 dest=/etc/systemd/system/docker.service mode=0644
   tags: config
-  notify:
-    - systemd reload
-    - restart docker
-    - add to docker group
+  register: docker_rendered
   when: not use_tls
 
 - include: ../../common/tasks/certificates.yml
@@ -25,8 +22,20 @@
   become_user: root
   template: src=docker.service.tls.j2 dest=/etc/systemd/system/docker.service mode=0644
   tags: config
-  notify:
-    - systemd reload
-    - restart docker
-    - add to docker group
+  register: docker_tls_rendered
   when: use_tls
+
+- name: systemd reload
+  become_user: root
+  shell: systemctl daemon-reload
+  when: docker_rendered|changed or docker_tls_rendered|changed
+
+- name: restart docker
+  become_user: root
+  service: name=docker state=restarted
+  when: docker_rendered|changed or docker_tls_rendered|changed
+
+- name: add to docker group
+  become_user: root
+  user: name={{ docker_user }} shell=/bin/bash groups=docker append=yes
+  when: docker_rendered|changed or docker_tls_rendered|changed

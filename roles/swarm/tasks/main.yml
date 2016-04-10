@@ -3,7 +3,7 @@
   shell: docker rm -f swarm-agent
   tags: agent
   register: stop_result
-  failed_when: "stop_result.rc != 0 && stop_result.rc != 1"
+  failed_when: "stop_result.rc != 0 and stop_result.rc != 1"
 
 - name: start swarm agent
   shell: docker run --name swarm-agent --restart=always -d swarm join --addr={{ ansible_host }}:2375 etcd://{{ etcd_hosts }}/swarm
