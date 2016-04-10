@@ -11,14 +11,14 @@
   failed_when: "stop_result.rc != 0 and stop_result.rc != 1"
 
 - name: start swarm manager
-  shell: docker run -d --name swarm-manager --restart=always -p 8375:2375 swarm manage etcd://{{ etcd_hosts }}/swarm
+  shell: docker run -d --name swarm-manager --restart=always -p 8375:2375 swarm manage -H 0.0.0.0:2375 etcd://{{ etcd_hosts }}/swarm
   tags:
     - swarm
     - manager
   when: not use_tls
 
 - name: start swarm manager with tls
-  shell: docker run -d --name swarm-manager --restart=always -p 8376:3376 -v /certs:/certs:ro swarm manage --host=0.0.0.0:3376 etcd://{{ etcd_hosts_tls }}/swarm --tlsverify --tlscacert=/certs/ca.pem --tlscert=/certs/server.pem --tlskey=/certs/server-key.pem
+  shell: docker run -d --name swarm-manager --restart=always -p 8376:3376 -v /certs:/certs:ro swarm manage -H 0.0.0.0:3376 etcd://{{ etcd_hosts_tls }}/swarm --tlsverify --tlscacert=/certs/ca.pem --tlscert=/certs/server.pem --tlskey=/certs/server-key.pem --discovery-opt kv.cacertfile=/certs/ca.pem --discovery-opt kv.certfile=/certs/client.pem --discovery-opt kv.keyfile=/certs/client-key.pem
   tags:
     - swarm
     - manager
