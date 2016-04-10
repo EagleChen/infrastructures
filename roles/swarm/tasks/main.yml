@@ -1,0 +1,14 @@
+---
+- name: stop previous swarm agent
+  shell: docker rm -f swarm-agent
+  tags: agent
+
+- name: start swarm agent
+  shell: docker run --name swarm-agent --restart=always -d swarm join --addr={{ ansible_host }}:2375 etcd://{{ etcd_hosts }}/swarm
+  tags: agent
+  when: not use_tls
+
+- name: start swarm agent with tls
+  shell: docker run --name swarm-agent --restart=always -d swarm join --addr={{ ansible_host }}:2376 etcd://{{ etcd_hosts_tls }}/swarm
+  tags: agent
+  when: use_tls

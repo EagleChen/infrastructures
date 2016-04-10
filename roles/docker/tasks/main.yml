@@ -1,0 +1,28 @@
+---
+- name: install docker
+  become_user: root
+  shell: curl -fsSL https://test.docker.com/ | sed 's|url="https://test|url="https://get|' | sh
+  tags: install
+
+- name: render docker opts
+  become_user: root
+  template: src=docker.service.j2 dest=/etc/systemd/system/docker.service mode=0644
+  tags: config
+  notify:
+    - systemd reload
+    - restart docker
+    - add to docker group
+  when: not use_tls
+
+- include: ../../common/tasks/certificates.yml
+  when: use_tls
+
+- name: render docker opts with tls
+  become_user: root
+  template: src=docker.service.tls.j2 dest=/etc/systemd/system/docker.service mode=0644
+  tags: config
+  notify:
+    - systemd reload
+    - restart docker
+    - add to docker group
+  when: use_tls

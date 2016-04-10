@@ -1,0 +1,17 @@
+---
+- include: ../../common/tasks/certificates.yml
+  when: use_tls
+
+- name: start swarm manager
+  shell: docker run -d --name swarm-manager --restart=always -p 8375:2375 swarm manage etcd://{{ etcd_hosts }}/swarm
+  tags:
+    - swarm
+    - manager
+  when: not use_tls
+
+- name: start swarm manager with tls
+  shell: docker run -d --name swarm-manager --restart=always -p 8376:3376 -v /certs:/certs:ro --tlsverify --tlscacert=/certs/ca.pem --tlscert=/certs/server.pem --tlskey=/certs/server-key.pem swarm manage --host=0.0.0.0:3376 etcd://{{ etcd_hosts_tls }}/swarm
+  tags:
+    - swarm
+    - manager
+  when: use_tls

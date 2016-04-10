@@ -7,7 +7,7 @@ User={{ etcd_user }}
 Type=notify
 Environment="ETCD_DATA_DIR=/etcd"
 Environment="ETCD_NAME={{ inventory_hostname }}"
-Environment="ETCD_INITIAL_CLUSTER={% set cluster = [] %}{% for host in groups['etcd_servers'] %}{% if cluster.append(host+'=https://'+hostvars[host]['ansible_eth0']['ipv4']['address']+':2380') %}{% endif %}{% endfor %}{{ cluster | join(',') }}"
+Environment="ETCD_INITIAL_CLUSTER={{ initial_cluster_tls }}"
 Environment="ETCD_INITIAL_CLUSTER_STATE=new"
 Environment="ETCD_INITIAL_ADVERTISE_PEER_URLS=https://{{ ansible_host }}:2380"
 Environment="ETCD_LISTEN_PEER_URLS=https://0.0.0.0:2380"

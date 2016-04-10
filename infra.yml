@@ -2,5 +2,26 @@
 - hosts: etcd_servers
   user: ubuntu
   become: true
+  vars:
+	initial_cluster: "{% set cluster = [] %}{% for host in groups['etcd_servers'] %}{% if cluster.append(host+'=http://'+hostvars[host]['ansible_eth0']['ipv4']['address']+':2379') %}{% endif %}{% endfor %}{{ cluster | join(',') }}"
+	initial_cluster_tls: "{% set cluster = [] %}{% for host in groups['etcd_servers'] %}{% if cluster.append(host+'=https://'+hostvars[host]['ansible_eth0']['ipv4']['address']+':2380') %}{% endif %}{% endfor %}{{ cluster | join(',') }}"
   roles:
     - {role: etcd, use_tls: true, cert_user: 'ubuntu', etcd_user: 'ubuntu', etcd_group: 'ubuntu', etcd_version: 'v2.3.1', etcd_token: 'dev-cluster'}
+
+- hosts: docker_servers
+  user: ubuntu
+  become: true
+  vars:
+	etcd_hosts: "{% set cluster = [] %}{% for host in groups['etcd_servers'] %}{% if cluster.append(hostvars[host]['ansible_eth0']['ipv4']['address']+':2379') %}{% endif %}{% endfor %}{{ cluster | join(',') }}"
+	etcd_hosts_tls: "{% set cluster = [] %}{% for host in groups['etcd_servers'] %}{% if cluster.append(hostvars[host]['ansible_eth0']['ipv4']['address']+':2380') %}{% endif %}{% endfor %}{{ cluster | join(',') }}"
+  roles:
+	- {role: docker, use_tls: true, cert_user: 'ubuntu', docker_user: 'ubuntu'}
+	- {role: swarm, use_tls: true}
+
+- host: swarm_manager
+  user: ubuntu
+  vars:
+	etcd_hosts: "{% set cluster = [] %}{% for host in groups['etcd_servers'] %}{% if cluster.append(hostvars[host]['ansible_eth0']['ipv4']['address']+':2379') %}{% endif %}{% endfor %}{{ cluster | join(',') }}"
+	etcd_hosts_tls: "{% set cluster = [] %}{% for host in groups['etcd_servers'] %}{% if cluster.append(hostvars[host]['ansible_eth0']['ipv4']['address']+':2380') %}{% endif %}{% endfor %}{{ cluster | join(',') }}"
+  roles:
+	- {role: swarm_manager, use_tls: true, cert_user: 'ubuntu'}
