@@ -47,7 +47,7 @@ ansible-playbook -i hosts infra.yml
 	```
 
 ## Notes
-1. If tls is enabled, please refer to [docker official document](https://docs.docker.com/swarm/configure-tls/#step-8-test-the-swarm-manager-configuration) on how to test your cluster.
+1. If tls is enabled, please refer to [official docker document](https://docs.docker.com/swarm/configure-tls/#step-8-test-the-swarm-manager-configuration) on how to test your cluster.
 If not, use the following command to check:
 	```
 	docker -H <swarm manager ip>:<swarm manager port> info
