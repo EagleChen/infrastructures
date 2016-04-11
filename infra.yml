@@ -13,7 +13,6 @@
   become: true
   vars:
     etcd_hosts: "{% set cluster = [] %}{% for host in groups['etcd_servers'] %}{% if cluster.append(hostvars[host]['ansible_eth0']['ipv4']['address']+':2379') %}{% endif %}{% endfor %}{{ cluster | join(',') }}"
-    etcd_hosts_tls: "{% set cluster = [] %}{% for host in groups['etcd_servers'] %}{% if cluster.append(hostvars[host]['ansible_eth0']['ipv4']['address']+':2380') %}{% endif %}{% endfor %}{{ cluster | join(',') }}"
   roles:
     - {role: docker, use_tls: true, cert_user: 'ubuntu', docker_user: 'ubuntu'}
     - {role: swarm, use_tls: true}
@@ -22,6 +21,5 @@
   user: ubuntu
   vars:
     etcd_hosts: "{% set cluster = [] %}{% for host in groups['etcd_servers'] %}{% if cluster.append(hostvars[host]['ansible_eth0']['ipv4']['address']+':2379') %}{% endif %}{% endfor %}{{ cluster | join(',') }}"
-    etcd_hosts_tls: "{% set cluster = [] %}{% for host in groups['etcd_servers'] %}{% if cluster.append(hostvars[host]['ansible_eth0']['ipv4']['address']+':2380') %}{% endif %}{% endfor %}{{ cluster | join(',') }}"
   roles:
     - {role: swarm_manager, use_tls: true, cert_user: 'ubuntu'}

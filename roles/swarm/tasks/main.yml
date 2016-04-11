@@ -11,6 +11,6 @@
   when: not use_tls
 
 - name: start swarm agent with tls
-  shell: docker run --name swarm-agent --restart=always -d swarm join --advertise={{ ansible_host }}:2376 etcd://{{ etcd_hosts_tls }}/swarm --discovery-opt kv.cacertfile=/certs/ca.pem --discovery-opt kv.certfile=/certs/client.pem --discovery-opt kv.keyfile=/certs/client-key.pem
+  shell: docker run --name swarm-agent --restart=always -d -v /certs:/certs:ro swarm join --advertise={{ ansible_host }}:2376 --discovery-opt kv.cacertfile=/certs/ca.pem --discovery-opt kv.certfile=/certs/client.pem --discovery-opt kv.keyfile=/certs/client-key.pem etcd://{{ etcd_hosts }}/swarm
   tags: agent
   when: use_tls
