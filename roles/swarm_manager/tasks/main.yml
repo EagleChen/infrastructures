@@ -18,7 +18,7 @@
   when: not use_tls
 
 - name: start swarm manager with tls
-  shell: docker run -d --name swarm-manager --restart=always -p 8376:3376 -v /certs:/certs:ro swarm manage -H 0.0.0.0:3376 --tlsverify --tlscacert=/certs/ca.pem --tlscert=/certs/server.pem --tlskey=/certs/server-key.pem --discovery-opt kv.cacertfile=/certs/ca.pem --discovery-opt kv.certfile=/certs/client.pem --discovery-opt kv.keyfile=/certs/client-key.pem etcd://{{ etcd_hosts }}/swarm
+  shell: docker run -d --name swarm-manager --restart=always -p 8376:3376 -v /certs:/certs:ro swarm manage -H 0.0.0.0:3376 --tlsverify --tlscacert=/certs/ca.pem --tlscert=/certs/member.pem --tlskey=/certs/member-key.pem --discovery-opt kv.cacertfile=/certs/ca.pem --discovery-opt kv.certfile=/certs/client.pem --discovery-opt kv.keyfile=/certs/client-key.pem etcd://{{ etcd_hosts }}/swarm
   tags:
     - swarm
     - manager
