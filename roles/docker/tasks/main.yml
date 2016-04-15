@@ -4,7 +4,7 @@
 
 - name: install docker
   become_user: root
-  shell: curl -fsSL https://test.docker.com/ | sed 's|url="https://test|url="https://get|' | sh
+  shell: curl -fsSL https://get.docker.com/ | sh
   tags: install
   when: not dockerbin.stat.exists
 
