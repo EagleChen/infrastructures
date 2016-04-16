@@ -6,16 +6,16 @@
   become_user: root
   shell: curl -fsSL https://get.docker.com/ | sh
   tags:
-	 - install
-	 - docker
+    - install
+    - docker
   when: not dockerbin.stat.exists
 
 - name: render docker opts
   become_user: root
   template: src=docker.service.j2 dest=/etc/systemd/system/docker.service mode=0644
   tags:
-	- config
-	- docker
+    - config
+    - docker
   register: docker_rendered
   when: not use_tls
 
@@ -26,8 +26,8 @@
   become_user: root
   template: src=docker.service.tls.j2 dest=/etc/systemd/system/docker.service mode=0644
   tags:
-	- config
-	- docker
+    - config
+    - docker
   register: docker_tls_rendered
   when: use_tls
 
