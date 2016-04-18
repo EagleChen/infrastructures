@@ -1,6 +1,9 @@
 ---
 - stat: path=/usr/bin/docker
   register: dockerbin
+  tags:
+    - precheck
+    - docker
 
 - name: install docker
   become_user: root
@@ -35,13 +38,22 @@
   become_user: root
   shell: systemctl daemon-reload
   when: docker_rendered|changed or docker_tls_rendered|changed
+  tags:
+    - execution
+    - docker
 
 - name: restart docker
   become_user: root
   service: name=docker state=restarted
   when: docker_rendered|changed or docker_tls_rendered|changed
+  tags:
+    - execution
+    - docker
 
 - name: add to docker group
   become_user: root
   user: name={{ docker_user }} shell=/bin/bash groups=docker append=yes
   when: docker_rendered|changed or docker_tls_rendered|changed
+  tags:
+    - execution
+    - docker

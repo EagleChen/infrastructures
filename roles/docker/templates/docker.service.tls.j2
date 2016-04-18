@@ -7,7 +7,7 @@ Requires=docker.socket
 [Service]
 Type=notify
 ExecStart=
-ExecStart=/usr/bin/docker daemon -H fd:// -H tcp://0.0.0.0:2376 -H unix:///var/run/docker.sock -g /data/docker --tlsverify --tlscacert=/certs/ca.pem --tlscert=/certs/server.pem --tlskey=/certs/server-key.pem {{ "--registry-mirror="+registry_mirror if registry_mirror is defined and registry_mirror|trim != "" else ""  }} --cluster-store=etcd://{{ etcd_hosts }} --cluster-advertise={{ ansible_host }}:2376 --label host={{ ansible_host }}
+ExecStart=/usr/bin/docker daemon -H fd:// -H tcp://0.0.0.0:2376 -H unix:///var/run/docker.sock -g /data/docker --tlsverify --tlscacert=/certs/ca.pem --tlscert=/certs/server.pem --tlskey=/certs/server-key.pem {{ "--registry-mirror="+registry_mirror if registry_mirror is defined and registry_mirror|trim != "" else ""  }} --cluster-store=etcd://{{ etcd_hosts }} --cluster-advertise={{ ansible_host }}:2376 --cluster-store-opt kv.cacertfile=/certs/ca.pem --cluster-store-opt kv.certfile=/certs/client.pem --cluster-store-opt kv.keyfile=/certs/client-key.pem --label host={{ ansible_host }}
 LimitNOFILE=1048576
 LimitNPROC=1048576
 TasksMax=1048576
