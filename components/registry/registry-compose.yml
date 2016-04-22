@@ -1,0 +1,31 @@
+---
+registryauth:
+  image: cesanta/docker_auth:stable
+  ports:
+    - "5001:5001"
+  volumes:
+    - /data/registry/auth_server/config:/config:ro
+    - /data/registry/auth_server/logs:/logs
+    - /data/registry/auth_server/ssl:/ssl:ro
+  command: /config/auth_config.yml
+  restart: always
+
+registry:
+  image: registry:2
+  ports:
+    - "5000:5000"
+  volumes:
+    - /data/registry/auth_server/ssl:/ssl:ro
+    - /data/registry/data:/var/lib/registry
+  restart: always
+  environment:
+    - REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry
+    - REGISTRY_AUTH=token
+    - REGISTRY_AUTH_TOKEN_REALM=https://<domain>:5001/auth
+    - REGISTRY_AUTH_TOKEN_SERVICE="Docker registry"
+    - REGISTRY_AUTH_TOKEN_ISSUER="Private Auth Service"
+    - REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE=/ssl/server.pem
+    - REGISTRY_HTTP_TLS_CERTIFICATE=/ssl/server.pem
+    - REGISTRY_HTTP_TLS_KEY=/ssl/server-key.pem
+  depends_on:
+    - registryauth
