@@ -34,6 +34,13 @@
   register: docker_tls_rendered
   when: use_tls
 
+- name: render docker socket
+  become_user: root
+  template: src=docker.socket.j2 dest=/etc/systemd/system/docker.socket mode=0644
+  tags:
+    - config
+    - docker
+
 - name: systemd reload
   become_user: root
   shell: systemctl daemon-reload
